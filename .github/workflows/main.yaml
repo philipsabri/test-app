@@ -1,8 +1,5 @@
 name: Main
 
-permissions:
-  packages: write
-
 on:
   push:
     branches: [ "main" ]
@@ -15,6 +12,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
     - uses: actions/checkout@v3
     - name: Log in to the Container registry

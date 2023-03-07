@@ -1,5 +1,8 @@
 name: Main
 
+permissions:
+  packages: write
+
 on:
   push:
     branches: [ "main" ]

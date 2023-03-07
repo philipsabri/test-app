@@ -51,4 +51,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: "patch"
         RELEASE_BRANCHES: "main"
-    - run: git tag prod -f && git push origin prod
+    - run: git tag prod -f && git push origin prod -f

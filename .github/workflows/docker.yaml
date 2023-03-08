@@ -11,7 +11,7 @@ env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}
 
 jobs:
-  build:
+  build-and-push-docker:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -47,7 +47,7 @@ jobs:
     # Push changes to main
     - name: Commit and Push
       run: |
-        git config --local user.email "action@github.com"
+        git config --local user.email "philipsabri@gmail.com  "
         git config --local user.name "GitHub Action"
         git commit -am "Update tag"
 

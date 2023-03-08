@@ -1,0 +1,18 @@
+name: TEst
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ contains(github.event.head_commit.modified, 'deployment/') }}
+    steps:
+      - run: hej från deploy
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - run: hej från deploy
+      - run: echo ${{ github.event.head_commit.modified }}

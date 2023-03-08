@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '!**'
-      - deployment/**
+    paths-ignore:
+      - '**'
+      - '!deployment/**'
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}

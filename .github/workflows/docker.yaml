@@ -43,7 +43,7 @@ jobs:
       run: docker push ${{ env.IMAGE_NAME }}:${{ steps.create_tag.outputs.tag }}
 
     # YQ Changes
-    - run: yq -i '.image.tag = "${{ steps.create_tag.outputs.tag }}"' deployment/values-dev.yaml
+    - run: yq -i '.test-app-chart.image.tag = "${{ steps.create_tag.outputs.tag }}"' deployment/values-dev.yaml
 
     # Push changes to main
     - name: Commit and Push

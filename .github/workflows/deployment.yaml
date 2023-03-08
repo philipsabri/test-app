@@ -25,9 +25,15 @@ jobs:
     - run: cp deployment/values-dev.yaml argocd/deployment/test-app-dev.yaml
 
     # Push changes to main
-    - name: Commit and Push
+    - name: Git Commit
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -am "Update tag"
-        git push
+
+    # Temporary becuase https://github.com/orgs/community/discussions/25702
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.PHILIP_TOKEN }}
+        branch: ${{ github.ref }}

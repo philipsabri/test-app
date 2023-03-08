@@ -1,0 +1,33 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - deployments/**
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/checkout@v3
+      with:
+        repository: https://github.com/philipsabri/argocd.git
+        token: ${{ secrets.PHILIP_TOKEN }}
+        path: argocd
+
+    - run: cp deployment/values-dev.yaml argocd/deployment/test-app-dev.yaml
+
+    # Push changes to main
+    - name: Commit and Push
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -am "Update tag"
+        git push

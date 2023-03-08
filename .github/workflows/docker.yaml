@@ -1,4 +1,4 @@
-name: Main
+name: Docker
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
       run: docker push ${{ env.IMAGE_NAME }}:${{ steps.create_tag.outputs.tag }}
 
     # YQ Changes
-    - run: yq -i '.image.tag = "${{ steps.create_tag.outputs.tag }}"' deployment/values.yaml
+    - run: yq -i '.image.tag = "${{ steps.create_tag.outputs.tag }}"' deployment/values-dev.yaml
 
     # Push changes to main
     - name: Commit and Push

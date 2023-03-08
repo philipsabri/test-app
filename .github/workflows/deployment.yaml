@@ -25,7 +25,7 @@ jobs:
         path: argocd
 
 
-    - run: cp test-app/deployment/values-dev.yaml argocd/deployment/test-app-dev.yaml
+    - run: cp test-app/deployment/values-dev.yaml argocd/deployment/test-app-dev/test-app-dev.yaml
 
     # Push changes to main
     - name: Git Commit

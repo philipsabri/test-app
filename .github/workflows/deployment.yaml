@@ -25,9 +25,12 @@ jobs:
         filters: |
           deployment:
             - 'deployment/**'
+          other:
+            - '**'
+            - '!deployment/**'
 
     - uses: actions/checkout@v3
-      if: steps.changes.outputs.deployment == 'true'
+      if: steps.changes.outputs.other == 'false'
       with:
         repository: philipsabri/argocd
         token: ${{ secrets.PHILIP_TOKEN }}
@@ -35,11 +38,11 @@ jobs:
 
 
     - run: cp test-app/deployment/values-dev.yaml argocd/deployment/test-app-dev/test-app-dev.yaml
-      if: steps.changes.outputs.deployment == 'true'
+      if: steps.changes.outputs.other == 'false'
 
     # Push changes to main
     - name: Git Commit
-      if: steps.changes.outputs.deployment == 'true'
+      if: steps.changes.outputs.other == 'false'
       working-directory: argocd
       run: |
         git config --local user.email "action@github.com"
@@ -49,7 +52,7 @@ jobs:
 
     # Temporary becuase https://github.com/orgs/community/discussions/25702
     - name: Push changes
-      if: steps.changes.outputs.deployment == 'true'
+      if: steps.changes.outputs.other == 'false'
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.PHILIP_TOKEN }}

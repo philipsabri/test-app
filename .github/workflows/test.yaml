@@ -20,6 +20,7 @@ jobs:
             if !(echo "$file" | grep -q "^deployment/"); then
               echo "changes made outside deployment"
               exit 1
+            fi
           done
       - run: echo "bara om det är deployment"
   docker:

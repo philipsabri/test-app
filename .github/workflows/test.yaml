@@ -10,8 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ contains(github.event.head_commit.modified, 'deployment/') }}
     steps:
-      - run: echo "hej från deploy"
+      - name: Check deployment changes
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          echo "$CHANGED_FILES" # For debugging purposes
+          if echo "$CHANGED_FILES" | grep -q "^deployment/"; then
+            echo "Changes detected in the deployment directory, triggering deployment"
+            # Add your deployment commands here
+          else
+            echo "No changes detected in the deployment directory, skipping deployment"
+          fi
   docker:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ github.event }}
+      - run: echo "hej"

@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - deployment/**
+      - '!**'
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}

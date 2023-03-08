@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+      with:
+        path: test-app
 
     - uses: actions/checkout@v3
       with:
@@ -22,10 +24,12 @@ jobs:
         token: ${{ secrets.PHILIP_TOKEN }}
         path: argocd
 
-    - run: cp deployment/values-dev.yaml argocd/deployment/test-app-dev.yaml
+
+    - run: cp test-app/deployment/values-dev.yaml argocd/deployment/test-app-dev.yaml
 
     # Push changes to main
     - name: Git Commit
+      working-directory: argocd
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"

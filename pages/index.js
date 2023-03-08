@@ -11,7 +11,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js hej john philip a</a> on Docker!
+          Welcome to <a href="https://nextjs.org">Next.js hej john philip asdasd</a> on Docker!
         </h1>
 
         <p className={styles.description}>

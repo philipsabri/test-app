@@ -14,4 +14,4 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ github.event.head_commit.modified }}
+      - run: echo ${{ github.event }}

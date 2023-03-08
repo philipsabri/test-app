@@ -25,6 +25,8 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+
+    # Dry run tag
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@1.61.0
       id: create_tag
@@ -33,17 +35,32 @@ jobs:
         DEFAULT_BUMP: "patch"
         RELEASE_BRANCHES: "main"
         DRY_RUN: "true"
+
+
+    # Docker build and push
     - name: Build the Docker image
       run: docker build -t ${{ env.IMAGE_NAME }}:${{ steps.create_tag.outputs.tag }} .
     - name: Push to GHCR
       run: docker push ${{ env.IMAGE_NAME }}:${{ steps.create_tag.outputs.tag }}
+
+    # Update Yamls with YQ
     - run: yq -i '.image.tag = "${{ steps.create_tag.outputs.tag }}"' deployment/values.yaml
+    - run: yq -i '.version = "${{ steps.create_tag.outputs.tag }}"' deployment/Chart.yaml
+    - run: yq -i '.appVersion = "${{ steps.create_tag.outputs.tag }}"' deployment/Chart.yaml
+
+    # Package helm
+    - run: helm package ./deployment
+    - run: helm push test-app-chart-${{ steps.create_tag.outputs.tag }}.tgz oci://ghcr.io/philipsabri
+
+    # Push changes to main
     - name: Commit and Push
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -am "Update tag"
         git push
+
+    # Create tag with new yaml changes
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@1.61.0
       id: create_tag_real
@@ -51,4 +68,3 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: "patch"
         RELEASE_BRANCHES: "main"
-    - run: git tag prod -f && git push origin prod -f

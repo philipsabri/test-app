@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - deployments/**
+      - deployment/**
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}

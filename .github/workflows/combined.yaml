@@ -1,0 +1,86 @@
+name: Combined
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+
+      - name: Install YQ
+        uses: dcarbone/install-yq-action@v1.1.0
+
+      # Check file changes here
+      - name: Check deployment changes
+        id: check_files
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} HEAD)
+          echo "$CHANGED_FILES" # For debugging purposes
+          for file in $CHANGED_FILES; do
+            if !(echo "$file" | grep -q "^deployment/"); then
+              echo "changes made outside deployment"
+              echo "::set-output name=docker::true"
+            fi
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.61.0
+        id: create_tag
+        if: steps.check_files.outputs.docker
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: "patch"
+          RELEASE_BRANCHES: "main"
+
+      # Docker build and push
+      - name: Build the Docker image
+        if: steps.check_files.outputs.docker
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ steps.create_tag.outputs.tag }} .
+      - name: Push to GHCR
+        if: steps.check_files.outputs.docker
+        run: docker push ${{ env.IMAGE_NAME }}:${{ steps.create_tag.outputs.tag }}
+
+      #YQ Changes
+      - run: yq -i '.test-app-chart.image.tag = "${{ steps.create_tag.outputs.tag }}"' deployment/values-dev.yaml
+        if: steps.check_files.outputs.docker
+
+  deployment:
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+          path: test-app
+      - uses: actions/checkout@v3
+        with:
+          repository: philipsabri/argocd
+          token: ${{ secrets.PHILIP_TOKEN }}
+          path: argocd
+
+      - run: cp test-app/deployment/values-dev.yaml argocd/deployment/test-app-dev/test-app-dev.yaml
+
+      - name: Git Commit
+        working-directory: argocd
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update tag"
+
+      # Temporary becuase https://github.com/orgs/community/discussions/25702
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PHILIP_TOKEN }}
+          branch: ${{ github.ref }}
+          directory: argocd
+          repository: philipsabri/argocd

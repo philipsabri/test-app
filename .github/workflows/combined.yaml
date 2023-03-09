@@ -58,6 +58,15 @@ jobs:
       - run: yq -i '.test-app-chart.image.tag = "${{ steps.create_tag.outputs.tag }}"' deployment/values-dev.yaml
         if: steps.check_files.outputs.docker
 
+      - name: Git Commit
+        working-directory: argocd
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update tag"
+          git push
+
   deployment:
     runs-on: ubuntu-latest
     needs: docker

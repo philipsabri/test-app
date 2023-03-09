@@ -75,6 +75,7 @@ jobs:
         with:
           fetch-depth: '0'
           path: test-app
+          ref: 'main'
       - uses: actions/checkout@v3
         with:
           repository: philipsabri/argocd

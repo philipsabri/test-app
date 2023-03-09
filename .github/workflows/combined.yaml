@@ -30,6 +30,7 @@ jobs:
               echo "changes made outside deployment"
               echo "::set-output name=docker::true"
             fi
+          done
 
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.61.0

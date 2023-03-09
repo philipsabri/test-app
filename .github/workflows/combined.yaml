@@ -60,6 +60,7 @@ jobs:
 
       - name: Git Commit
         working-directory: argocd
+        if: steps.check_files.outputs.docker
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"

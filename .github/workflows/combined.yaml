@@ -23,8 +23,8 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install YQ
-        uses: dcarbone/install-yq-action@v1.1.0
+      # - name: Install YQ
+      #   uses: dcarbone/install-yq-action@v1.1.0
 
       # Check file changes here
       - name: Check deployment changes
@@ -84,6 +84,8 @@ jobs:
           repository: philipsabri/argocd
           token: ${{ secrets.PHILIP_TOKEN }}
           path: argocd
+      - name: Install YQ
+        uses: dcarbone/install-yq-action@v1.1.0
 
       - run: yq -i '.test-app-chart.image.tag = "${{ needs.docker.outputs.tag }}"' deployment/values-dev.yaml
         if: ${{ needs.docker.outputs.tag }}

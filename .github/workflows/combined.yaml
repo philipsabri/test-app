@@ -87,7 +87,7 @@ jobs:
       - name: Install YQ
         uses: dcarbone/install-yq-action@v1.1.0
 
-      - run: yq -i '.test-app-chart.image.tag = "${{ needs.docker.outputs.tag }}"' deployment/values-dev.yaml
+      - run: yq -i '.test-app-chart.image.tag = "${{ needs.docker.outputs.tag }}"' test-app/deployment/values-dev.yaml
         if: ${{ needs.docker.outputs.tag }}
       - run: cp test-app/deployment/values-dev.yaml argocd/deployment/test-app-dev/test-app-dev.yaml
 

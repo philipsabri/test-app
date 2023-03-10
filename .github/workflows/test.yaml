@@ -7,4 +7,4 @@ on:
 
 jobs:
   call-workflow-1-in-local-repo:
-    uses: philipasbri/reusable-workflows/.github/workflows/test.yaml@main
+    uses: philipsabri/reusable-workflows/.github/workflows/test.yaml@main

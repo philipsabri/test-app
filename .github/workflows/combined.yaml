@@ -91,6 +91,7 @@ jobs:
         if: ${{ needs.docker.outputs.tag }}
       - run: cp test-app/deployment/values-dev.yaml argocd/deployment/test-app-dev/test-app-dev.yaml
 
+      # Commit to test-app repo (this repo) This wont trigger a new workflow because of https://github.com/orgs/community/discussions/25702
       - name: Git Commit
         working-directory: argocd
         run: |
@@ -98,8 +99,16 @@ jobs:
           git config --local user.name "GitHub Action"
           git add .
           git commit -m "Update tag"
+          git push
 
-      # Temporary becuase https://github.com/orgs/community/discussions/25702
+      # Commit and push to argocd repo (app-of-apps)
+      - name: Git Commit
+        working-directory: argocd
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update tag"
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:

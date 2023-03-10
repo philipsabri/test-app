@@ -11,6 +11,8 @@ env:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.create_tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -54,18 +56,19 @@ jobs:
         if: steps.check_files.outputs.docker
         run: docker push ${{ env.IMAGE_NAME }}:${{ steps.create_tag.outputs.tag }}
 
-      #YQ Changes
-      - run: yq -i '.test-app-chart.image.tag = "${{ steps.create_tag.outputs.tag }}"' deployment/values-dev.yaml
-        if: steps.check_files.outputs.docker
+      # send tag to next job and make commit there
 
-      - name: Git Commit
-        if: steps.check_files.outputs.docker
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Update tag"
-          git push
+      # #YQ Changes
+      # - run: yq -i '.test-app-chart.image.tag = "${{ steps.create_tag.outputs.tag }}"' deployment/values-dev.yaml
+      #   if: steps.check_files.outputs.docker
+      # - name: Git Commit
+      #   if: steps.check_files.outputs.docker
+      #   run: |
+      #     git config --local user.email "action@github.com"
+      #     git config --local user.name "GitHub Action"
+      #     git add .
+      #     git commit -m "Update tag"
+      #     git push
 
   deployment:
     runs-on: ubuntu-latest
@@ -82,6 +85,8 @@ jobs:
           token: ${{ secrets.PHILIP_TOKEN }}
           path: argocd
 
+      - run: yq -i '.test-app-chart.image.tag = "${{ needs.docker.outputs.tag }}"' deployment/values-dev.yaml
+        if: ${{ needs.docker.outputs.tag }}
       - run: cp test-app/deployment/values-dev.yaml argocd/deployment/test-app-dev/test-app-dev.yaml
 
       - name: Git Commit

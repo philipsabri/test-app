@@ -92,8 +92,8 @@ jobs:
       - run: cp test-app/deployment/values-dev.yaml argocd/deployment/test-app-dev/test-app-dev.yaml
 
       # Commit to test-app repo (this repo) This wont trigger a new workflow because of https://github.com/orgs/community/discussions/25702
-      - name: Git Commit
-        working-directory: argocd
+      - name: Git Commit test-app
+        working-directory: test-app
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -102,17 +102,18 @@ jobs:
           git push
 
       # Commit and push to argocd repo (app-of-apps)
-      - name: Git Commit
+      - name: Git Commit argocd
         working-directory: argocd
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
           git commit -m "Update tag"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PHILIP_TOKEN }}
-          branch: ${{ github.ref }}
-          directory: argocd
-          repository: philipsabri/argocd
+          git push
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.PHILIP_TOKEN }}
+      #     branch: ${{ github.ref }}
+      #     directory: argocd
+      #     repository: philipsabri/argocd

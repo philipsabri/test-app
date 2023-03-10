@@ -93,6 +93,7 @@ jobs:
 
       # Commit to test-app repo (this repo) This wont trigger a new workflow because of https://github.com/orgs/community/discussions/25702
       - name: Git Commit test-app
+        if: ${{ needs.docker.outputs.tag }} # Only push to current repo if there is a new docker image
         working-directory: test-app
         run: |
           git config --local user.email "action@github.com"

@@ -45,10 +45,6 @@ jobs:
         id: create_pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Create PR from default github token
-      # - run: gh pr merge ${{ steps.create_pr.outputs.pr }} --merge # Not allowed to use --admin with GITHUB_TOKEN
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if this is not GITHUB_TOKEN the merge will trigger an action loop
-
-      - run: gh pr merge ${{ steps.create_pr.outputs.pr }} --auto
+      - run: gh pr merge ${{ steps.create_pr.outputs.pr }} --merge --auto # Not allowed to use --admin with GITHUB_TOKEN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if this is not GITHUB_TOKEN the merge will trigger an action loop

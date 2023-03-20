@@ -45,6 +45,6 @@ jobs:
         id: create_pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Create PR from default github token
-      - run: gh pr merge ${{ steps.create_pr.outputs.pr }}
+      - run: gh pr merge ${{ steps.create_pr.outputs.pr }} --merge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # If this is merged by github app token we might be able to use the --admin bypass flag

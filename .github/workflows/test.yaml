@@ -3,7 +3,7 @@ name: test
 on:
   push:
     branches:
-      - main
+      - dont-trigger
 
 jobs:
   call-workflow-1-in-local-repo:

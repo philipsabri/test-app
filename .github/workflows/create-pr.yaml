@@ -1,0 +1,45 @@
+name: Combined
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Bump version and push tag
+        uses: kardapp/github-tag-action@master
+        id: create_tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: "patch"
+          RELEASE_BRANCHES: "main"
+          PRERELEASE: true
+      - name: Verify tag
+        run: |
+          echo ${{ steps.create_tag.outputs.tag }}
+          if [[ ! ${{ steps.create_tag.outputs.tag }} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+            echo "Error: Invalid semver version"
+            exit 1
+          fi
+
+      - run: git checkout -b pr-test-${{ steps.create_tag.outputs.tag }}
+
+      - run: echo ${{ steps.create_tag.outputs.tag }} > tag.txt
+
+      - name: Git Commit to branch
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update targetRevision ${{ env.repoName }} ${{ inputs.environment }}"
+          git push origin pr-test-${{ steps.create_tag.outputs.tag }}
+
+      - run: gh pr create --fill
+        env:
+          GITHUB_TOKEN: ${{ GITHUB_TOKEN }}

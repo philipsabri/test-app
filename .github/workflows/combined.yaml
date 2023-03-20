@@ -3,7 +3,7 @@ name: Combined
 on:
   push:
     branches:
-      - main
+      - dont-trigger
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}

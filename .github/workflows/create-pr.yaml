@@ -1,4 +1,4 @@
-name: Combined
+name: Create PR
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  docker:
+  create-pr:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -40,6 +40,11 @@ jobs:
           git commit -m "Update targetRevision ${{ env.repoName }} ${{ inputs.environment }}"
           git push origin pr-test-${{ steps.create_tag.outputs.tag }}
 
-      - run: gh pr create --fill
+      # GITHUB_TOKEN creates this PR and it seems we cant trigger any new Jobs based on that PR as it was created by GITHUB_TOKEN
+      - run: echo "pr=$(gh pr create --fill)" >> "$GITHUB_OUTPUT"
+        id: create_pr
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Create PR from default github token
+      - run: gh pr merge ${{ steps.create_pr.outputs.pr }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # If this is merged by github app token we might be able to use the --admin bypass flag

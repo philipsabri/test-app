@@ -48,3 +48,7 @@ jobs:
       - run: gh pr merge ${{ steps.create_pr.outputs.pr }} --merge --auto # Not allowed to use --admin with GITHUB_TOKEN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if this is not GITHUB_TOKEN the merge will trigger an action loop
+
+      - run: gh pr review ${{ steps.create_pr.outputs.pr }} --aprove
+        env:
+          GITHUB_TOKEN: ${{ secrets.PHILIP_TOKEN }} # Use seperate token to approve so we can have minimum 1 reviewer rule

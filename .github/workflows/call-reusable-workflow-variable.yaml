@@ -8,4 +8,4 @@ on:
 jobs:
   call-workflow-1-in-local-repo:
     uses: philipsabri/reusable-workflows/.github/workflows/reusable-variables.yaml@main
-    
+    secrets: inherit
